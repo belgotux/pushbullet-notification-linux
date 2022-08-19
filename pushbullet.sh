@@ -5,7 +5,7 @@
 # Version : 1.1
 # First Date : 08/03/18
 
-. $(basename $0 .sh).conf
+. $(dirname $0)/$(basename $0 .sh).conf
 
 
 #send push notification with pushbullet
@@ -28,16 +28,35 @@ function sendPushBullet {
 		return 1
 	fi
 	
-	tempfile=$(mktemp -p 'nutNotifyPushBullet-')
-	curl -s -o $tempfile --header "Access-Token: $accessToken" --header 'Content-Type: application/json' --request POST --data-binary "{\"type\":\"note\",\"title\":\"$HOSTNAME - $subjectPushBullet\",\"body\":\"$textPushBullet\"}" "$providerApi"
-	#TODO check return
+	tempfile=$(mktemp --suffix '.nutNotifyPushBullet')
+	curl -s -o "$tempfile" --header "Access-Token: $accessToken" --header 'Content-Type: application/json' --request POST --data-binary "{\"type\":\"note\",\"title\":\"$HOSTNAME - $subjectPushBullet\",\"body\":\"$textPushBullet\"}" "$providerApi"
+	returnCurl=$?
+	if [ $returnCurl -ne 0 ] ; then cat $tempfile ; fi
 	rm $tempfile
+	return $?
 }
 
+function aide() {
+	echo "$0 \"title\" \"message with space\""
+}
 
-if [ $# != 2 ] ; then
-	echo "Error : send message by argument :" 1>&2
-	echo "Example : pushbullet.sh \"Title\" \"message with spaces\"" 1>&2
+# add to log
+function addLog() {
+	if [ "$logfile" == "" ] ; then
+		echo "Can't write to log !" 1>&2
+		return 1
+	else
+		echo "$(date +'%a %d %H:%M:%S') $1" >> $logfile
+		return $?
+	fi
+}
+
+if [ $# -eq 1 ] && ( [ $? == '-h' ] || [ $? == '--help' ] ) ; then
+	aide
+	exit 0
+elif [ $# -ne 2 ] ; then
+	echo "Error : argument mal formated! Use like below" 1>&2
+	aide
 	exit 1
 fi
 
