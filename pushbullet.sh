@@ -2,13 +2,10 @@
 # Auteur : Belgotux
 # Site : www.monlinux.net
 # Licence : CC-BY-NC-SA (https://creativecommons.org/licenses/by-nc-sa/3.0/fr/)
-# Version : 1.0
-# Date : 08/03/18
-# changelog
-# v1.0 send by pushbullet
+# Version : 1.1
+# First Date : 08/03/18
 
-providerApi='https://api.pushbullet.com/v2/pushes'
-accessToken=''
+. $(basename $0 .sh).conf
 
 
 #send push notification with pushbullet
