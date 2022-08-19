@@ -31,7 +31,7 @@ function sendPushBullet {
 		return 1
 	fi
 	
-	tempfile=$(tempfile -p 'nutNotifyPushBullet-')
+	tempfile=$(mktemp -p 'nutNotifyPushBullet-')
 	curl -s -o $tempfile --header "Access-Token: $accessToken" --header 'Content-Type: application/json' --request POST --data-binary "{\"type\":\"note\",\"title\":\"$HOSTNAME - $subjectPushBullet\",\"body\":\"$textPushBullet\"}" "$providerApi"
 	#TODO check return
 	rm $tempfile
